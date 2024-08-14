@@ -1,2 +1,2 @@
 # echo
-Samll echo server
+Small echo server
