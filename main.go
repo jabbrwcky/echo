@@ -54,6 +54,7 @@ func echo(w http.ResponseWriter, req *http.Request) {
 		log.Error().Err(err).Msg("failed to read body")
 	}
 
+	w.Header().Set("content-type", "application/json")
 	resp := map[string]interface{}{
 		"content_length":    req.ContentLength,
 		"host":              req.Host,
