@@ -14,8 +14,17 @@ import (
 )
 
 func main() {
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /ping", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("x-echo-code", "200")
+		w.WriteHeader(200)
+		w.Write([]byte("OK"))
+	})
+
+	mux.HandleFunc("/", http.HandlerFunc(echo))
+
 	srv := http.Server{
-		Handler: http.HandlerFunc(echo),
+		Handler: mux,
 		Addr:    ":8080",
 	}
 
@@ -44,6 +53,7 @@ func echo(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		log.Error().Err(err).Msg("failed to read body")
 	}
+
 	resp := map[string]interface{}{
 		"content_length":    req.ContentLength,
 		"host":              req.Host,
@@ -57,8 +67,10 @@ func echo(w http.ResponseWriter, req *http.Request) {
 		"trailer":           req.Trailer,
 		"user_agent":        req.UserAgent(),
 		"referer":           req.Referer(),
+		"cookies":           req.Cookies(),
 		"body":              b,
 	}
+
 	enc := json.NewEncoder(w)
 	enc.Encode(resp)
 }
